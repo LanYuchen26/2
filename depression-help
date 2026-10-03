@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抑郁症科普与支持</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  line-height: 1.8;
+}
+/* 顶部导航 */
+.nav {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.nav button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 15px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+  font-family: inherit;
+}
+.nav button:hover { color: #fff; }
+.nav button.active {
+  color: #fff;
+  border-bottom-color: #fff;
+  font-weight: 600;
+}
+/* 页面容器 */
+.page { display: none; max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+.page.active { display: block; }
+
+/* 通用卡片 */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.card h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #4a3f6b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 { font-size: 16px; margin: 18px 0 8px; color: #5b4a8a; }
+.card p, .card li { font-size: 15px; color: #555; }
+.card ul { padding-left: 20px; margin: 8px 0; }
+.card li { margin-bottom: 6px; }
+
+/* 症状标签 */
+.tag {
+  display: inline-block;
+  background: #eef0ff;
+  color: #5b4a8a;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin: 3px 4px 3px 0;
+}
+
+/* 等级表 */
+.level-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+.level-table th {
+  background: #667eea;
+  color: #fff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 500;
+}
+.level-table td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+.level-table tr:nth-child(even) td { background: #f9f9ff; }
+
+/* 自测 */
+.quiz-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.quiz-item:last-of-type { border-bottom: none; }
+.quiz-item .q-text { font-size: 15px; margin-bottom: 10px; color: #444; }
+.quiz-options label {
+  display: inline-block;
+  margin-right: 16px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+.quiz-options input { margin-right: 4px; }
+.quiz-result {
+  margin-top: 20px;
+  padding: 18px 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  display: none;
+}
+.quiz-result.show { display: block; }
+
+/* 热线卡片 */
+.hotline-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border-left: 5px solid #667eea;
+}
+.hotline-card .num {
+  font-size: 26px;
+  font-weight: 700;
+  color: #667eea;
+  letter-spacing: 1px;
+}
+.hotline-card .desc { font-size: 14px; color: #777; margin-top: 6px; }
+.hotline-card .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.hotline-card .meta span {
+  background: #f0f0ff;
+  color: #5b4a8a;
+  padding: 3px 12px;
+  border-radius: 14px;
+}
+
+/* 聊天界面 */
+.chat-box {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  height: 540px;
+  overflow: hidden;
+}
+.chat-header {
+  background: #667eea;
+  color: #fff;
+  padding: 14px 22px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-header .dot {
+  width: 8px; height: 8px; background: #7cfc00;
+  border-radius: 50%; display: inline-block;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.msg {
+  max-width: 82%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.msg.bot {
+  background: #f0f1f8;
+  color: #333;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.msg.user {
+  background: #667eea;
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.msg.typing { color: #999; font-style: italic; }
+.chat-input-area {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 10px 14px;
+  gap: 8px;
+  background: #fafafa;
+}
+.chat-input-area input {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 22px;
+  padding: 10px 18px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.chat-input-area input:focus { border-color: #667eea; }
+.chat-input-area button {
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  padding: 10px 24px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.chat-input-area button:hover { background: #5568d3; }
+.chat-input-area button:disabled { background: #bbb; cursor: not-allowed; }
+
+/* 快捷回复 */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 20px 12px;
+}
+.quick-replies button {
+  background: #eef0ff;
+  color: #5b4a8a;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.quick-replies button:hover { background: #dde0ff; }
+
+/* 提示条 */
+.notice {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #795548;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 600px) {
+  .card { padding: 20px 18px; }
+  .nav button { font-size: 13px; padding: 14px 10px; }
+  .chat-box { height: 460px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="nav">
+  <button class="active" onclick="switchPage(0)">📖 科普了解</button>
+  <button onclick="switchPage(1)">📞 求助资源</button>
+  <button onclick="switchPage(2)">💬 AI倾诉</button>
+</nav>
+
+<!-- ==================== 页面一：科普 ==================== -->
+<div class="page active" id="page0">
+
+  <div class="card">
+    <h2>🧠 什么是抑郁症？</h2>
+    <p>抑郁症是一种常见的精神障碍，核心特征是<strong>持续的情绪低落</strong>和<strong>对事物失去兴趣或愉悦感</strong>，并伴随精力减退。它不是“心情不好”或“想太多”，而是一种需要被认真对待的健康问题。</p>
+    <p style="margin-top:10px">判断是否可能患有抑郁症，需要同时关注以下三个方面：</p>
+  </div>
+
+  <div class="card">
+    <h2>🔍 怎么判断自己是否有抑郁症倾向？</h2>
+    <p>根据临床标准，如果以下症状持续<strong>至少2周</strong>，且已经影响到工作、学习或日常生活，就需要引起重视：</p>
+
+    <h3>核心症状（至少出现2条）</h3>
+    <div>
+      <span class="tag">持续的情绪低落、悲伤或空虚</span>
+      <span class="tag">对几乎所有活动失去兴趣或愉快感</span>
+      <span class="tag">精力明显下降，容易疲劳</span>
+    </div>
+
+    <h3>其他常见症状</h3>
+    <ul>
+      <li>睡眠紊乱（入睡困难、早醒或嗜睡）</li>
+      <li>食欲或体重明显变化</li>
+      <li>注意力难以集中，做决定困难</li>
+      <li>自我评价过低，过度自责</li>
+      <li>对前途感到悲观、无望</li>
+      <li>反复出现自伤或自杀的念头</li>
+    </ul>
+
+    <div class="notice" style="margin-top:16px">
+      ⚠️ 以上仅为科普参考，<strong>不能代替专业诊断</strong>。如果怀疑自己患病，请到精神心理科就诊。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 抑郁等级划分</h2>
+    <p>临床上通常根据症状数量和功能受损程度划分抑郁等级：</p>
+    <table class="level-table">
+      <tr><th>等级</th><th>症状标准</th><th>功能影响</th></tr>
+      <tr>
+        <td>轻度抑郁</td>
+        <td>≥2条核心症状 + ≥2条其他症状</td>
+        <td>日常工作和社交有一定困难</td>
+      </tr>
+      <tr>
+        <td>中度抑郁</td>
+        <td>≥2条核心症状 + ≥3条其他症状</td>
+        <td>工作、社交或生活存在相当困难</td>
+      </tr>
+      <tr>
+        <td>重度抑郁</td>
+        <td>3条核心症状 + ≥4条其他症状</td>
+        <td>社会、工作和生活功能严重受损</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📝 PHQ-9 自评量表（快速筛查）</h2>
+    <p style="margin-bottom:14px">回想<strong>过去两周</strong>，以下问题困扰你的频率：</p>
+    <div id="quizContainer"></div>
+    <button onclick="calcQuiz()" style="margin-top:18px;background:#667eea;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:15px;cursor:pointer;font-family:inherit">查看结果</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+</div>
+
+<!-- ==================== 页面二：求助资源 ==================== -->
+<div class="page" id="page1">
+
+  <div class="card">
+    <h2>📞 全国心理援助热线</h2>
+    <p>如果你正在经历情绪困扰，请随时拨打以下热线，会有专业的心理咨询师为你提供帮助。</p>
+  </div>
+
+  <div class="hotline-card">
+    <div class="num">12356</div>
+    <div class="desc">全国统一心理援助热线</div>
+    <div class="meta">
+      <span>24小时服务</span>
+      <span>国家卫健委主管</span>
+      <span>免费</span>
+    </div>
+    <p style="margin-top:10px;font-size:13px;color:#888">覆盖全国各省市，提供心理健康教育、心理咨询、心理疏导、心理危机干预等服务。</p>
+  </div>
+
+  <div class="hotline-card">
+    <div class="num">12355</div>
+    <div class="desc">全国青少年心理服务热线</div>
+    <div class="meta">
+      <span>青少年优先</span>
+      <span>全年无休</span>
+      <span>免费</span>
+    </div>
+    <p style="margin-top:10px;font-size:13px;color:#888">由共青团运营，面向青少年及家长，提供心理咨询、法律咨询等服务。</p>
+  </div>
+
+  <div class="hotline-card">
+    <div class="num">400-161-9995</div>
+    <div class="desc">希望24热线 · 全国心理危机干预热线</div>
+    <div class="meta">
+      <span>24小时</span>
+      <span>危机干预</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>👩‍🏫 寻求心理老师帮助</h2>
+    <p>如果你希望与专业的心理咨询师或心理老师建立长期联系，可以通过以下方式：</p>
+    <ul style="margin-top:10px">
+      <li><strong>学校心理辅导室</strong>：在校学生可直接预约学校心理老师，通常免费且保密。</li>
+      <li><strong>医院心理科/精神科</strong>：到当地三甲医院的精神心理科挂号，医生会根据情况进行评估和治疗。</li>
+      <li><strong>正规心理咨询平台</strong>：如壹点灵、简单心理等平台，可选择持证心理咨询师进行线上或线下咨询。</li>
+      <li><strong>社区心理服务站</strong>：部分城市社区已设立心理咨询室，可提供基础心理服务。</li>
+    </ul>
+    <div class="notice" style="margin-top:16px">
+      💡 选择心理咨询师时，请确认对方具有国家认可的心理咨询师资质。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🆘 紧急情况</h2>
+    <p>如果你或身边的人<strong>正在经历自杀念头或紧急心理危机</strong>，请立即：</p>
+    <ul style="margin-top:8px">
+      <li>拨打 <strong>12356</strong>（全国心理援助热线）</li>
+      <li>拨打 <strong>120</strong>（急救）或 <strong>110</strong>（报警）</li>
+      <li>前往最近医院的<strong>急诊科</strong></li>
+      <li>告诉身边信任的人，不要独自面对</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== 页面三：AI倾诉 ==================== -->
+<div class="page" id="page2">
+
+  <div class="card" style="padding: 20px 24px;">
+    <h2>💬 AI 倾诉助手</h2>
+    <p style="font-size:14px;color:#888">这里是一个安全的倾诉空间。你可以和AI聊聊你的感受，它会倾听并尽力给你温暖的回应。</p>
+  </div>
+
+  <div class="chat-box">
+    <div class="chat-header">
+      <span class="dot"></span> AI 倾诉助手 · 在线
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot">你好，我是你的AI倾诉助手。我知道迈出第一步并不容易，但你能来到这里，已经很勇敢了。今天想聊聊什么？</div>
+    </div>
+    <div class="quick-replies" id="quickReplies">
+      <button onclick="quickSend('我最近总是开心不起来')">我最近总是开心不起来</button>
+      <button onclick="quickSend('我觉得很累，什么都不想做')">我觉得很累</button>
+      <button onclick="quickSend('我睡不着，脑子里很乱')">我睡不着</button>
+      <button onclick="quickSend('我觉得没有人理解我')">没有人理解我</button>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="说点什么吧..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button id="sendBtn" onclick="sendMessage()">发送</button>
+    </div>
+  </div>
+
+  <div class="notice" style="margin-top:18px">
+    ⚠️ AI助手不能替代专业心理治疗。如果你处于危机中，请立即拨打 <strong>12356</strong>。
+  </div>
+</div>
+
+<script>
+/* ==================== 页面切换 ==================== */
+function switchPage(index) {
+  document.querySelectorAll('.page').forEach((p, i) => {
+    p.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.nav button').forEach((b, i) => {
+    b.classList.toggle('active', i === index);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ==================== PHQ-9 自测 ==================== */
+const phq9 = [
+  "做事时提不起劲或没有兴趣",
+  "感到心情低落、沮丧或绝望",
+  "入睡困难、睡不安稳或睡眠过多",
+  "感觉疲倦或没有活力",
+  "食欲不振或吃太多",
+  "觉得自己很糟，或觉得自己很失败，或让自己/家人失望",
+  "对事物专注有困难，例如阅读或看电视时",
+  "动作或说话速度缓慢到别人已经察觉；或正好相反，烦躁或坐立不安、动来动去的情况比平时更多",
+  "有不如死掉或用某种方式伤害自己的念头"
+];
+const options = ["完全不会", "好几天", "一半以上天数", "几乎每天"];
+
+// 生成题目
+(function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  phq9.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-item';
+    div.innerHTML = `<div class="q-text">${i+1}. ${q}</div>
+      <div class="quiz-options">
+        ${options.map((opt, j) =>
+          `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`
+        ).join('')}
+      </div>`;
+    container.appendChild(div);
+  });
+})();
+
+function calcQuiz() {
+  let total = 0, answered = 0;
+  for (let i = 0; i < 9; i++) {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if (sel) { total += parseInt(sel.value); answered++; }
+  }
+  const result = document.getElementById('quizResult');
+  result.classList.add('show');
+
+  if (answered < 9) {
+    result.style.background = '#fff3cd';
+    result.style.color = '#856404';
+    result.innerHTML = `请回答全部 ${9} 道题目（当前已完成 ${answered} 题）。`;
+    return;
+  }
+
+  let level, color, advice;
+  if (total <= 4) {
+    level = '无明显抑郁症状'; color = '#d4edda'; advice = '你的情绪状态整体良好。继续保持规律作息和适度运动。';
+  } else if (total <= 9) {
+    level = '轻度抑郁倾向'; color = '#fff3cd'; advice = '存在一些抑郁症状，建议关注自己的情绪变化，适当与信任的人倾诉，必要时可拨打心理热线咨询。';
+  } else if (total <= 14) {
+    level = '中度抑郁倾向'; color = '#ffe0b2'; advice = '症状比较明显，建议尽快到精神心理科就诊，或拨打12356心理援助热线获取专业建议。';
+  } else if (total <= 19) {
+    level = '中重度抑郁倾向'; color = '#ffccbc'; advice = '症状较为严重，强烈建议尽快前往医院精神心理科就诊，寻求专业帮助。';
+  } else {
+    level = '重度抑郁倾向'; color = '#ffcdd2'; advice = '症状非常严重，请立即拨打12356或前往最近医院急诊科。你不需要独自承受这一切。';
+  }
+
+  result.style.background = color;
+  result.style.color = '#333';
+  result.innerHTML = `<strong>你的总分：${total} / 27</strong><br>
+    评估结果：<strong>${level}</strong><br>
+    <span style="font-size:14px;color:#666">${advice}</span>
+    <br><br><span style="font-size:12px;color:#999">⚠️ 本结果仅供筛查参考，不能作为诊断依据。请以精神心理科医生的诊断为准。</span>`;
+}
+
+/* ==================== AI 聊天 ==================== */
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const quickReplies = document.getElementById('quickReplies');
+
+// ⚠️ 在这里填入你的 DeepSeek API Key
+// 获取地址：https://platform.deepseek.com/api_keys
+const API_KEY = 'sk-你的API密钥在这里';
+const API_URL = 'https://api.deepseek.com/chat/completions';
+
+// 对话历史（保留上下文）
+let history = [
+  {
+    role: 'system',
+    content: '你是一位温暖、有同理心的AI心理支持助手。你的角色是倾听、陪伴和给予情感支持，而不是做心理诊断或治疗。请用温和、接纳、不评判的语气回应用户。如果用户提到自杀或自伤，请认真对待，建议立即拨打12356心理援助热线或前往医院。每次回复控制在200字以内，适当提问引导用户表达。'
+  }
+];
+
+function addMessage(text, type) {
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  div.textContent = text;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
+}
+
+function quickSend(text) {
+  chatInput.value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  // 隐藏快捷回复
+  quickReplies.style.display = 'none';
+
+  // 显示用户消息
+  addMessage(text, 'user');
+  chatInput.value = '';
+  sendBtn.disabled = true;
+
+  // 加入对话历史
+  history.push({ role: 'user', content: text });
+
+  // 显示“正在输入”
+  const typing = addMessage('正在输入...', 'bot typing');
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: history,
+        temperature: 0.8,
+        max_tokens: 500,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const reply = data.choices[0].message.content;
+
+    typing.remove();
+    addMessage(reply, 'bot');
+    history.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    typing.remove();
+    addMessage('抱歉，我现在无法连接到服务器。如果你需要帮助，请拨打 12356 心理援助热线。', 'bot');
+    console.error('API错误：', err);
+  }
+
+  sendBtn.disabled = false;
+  chatInput.focus();
+}
+</script>
+
+</body>
+</html>
